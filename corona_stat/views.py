@@ -1,8 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from bs4 import BeautifulSoup
-from corona_stat.web_scraping import WebScrap
+from .web_scraping import WebScrap
+from .pdf import pdf_read
 
 
 def total_info(html, text):
@@ -93,7 +95,7 @@ def get_content(html):
 
 
 class CoronaStatList(APIView):
-    def get(self, request, country=None, format=None):
+    def get(self, request, format=None):
         url = 'https://www.worldometers.info/coronavirus/'
         web_scrap = WebScrap(url)
         res = web_scrap.simple_get()
@@ -102,7 +104,17 @@ class CoronaStatList(APIView):
             return Response('error', status=status.HTTP_400_BAD_REQUEST)
 
         content = web_scrap.get_full_stat()
-        if country is not None:
-            content = content.get(country)
-
         return Response(content, status=status.HTTP_200_OK)
+
+
+class CoronaStatOfDistrict(APIView):
+    def get(self, request, format=None):
+        print('request come')
+        try:
+            pdf_url = "https://www.iedcr.gov.bd/website/images/files/nCoV/Case_dist_09_May_upload.pdf"
+            affected_number = pdf_read(pdf_url)
+            return Response(affected_number, status=status.HTTP_200_OK)
+        except:
+            print("error")
+            return Response('error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
