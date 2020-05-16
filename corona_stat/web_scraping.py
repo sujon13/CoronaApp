@@ -4,6 +4,7 @@ from contextlib import closing
 from bs4 import BeautifulSoup
 
 col_name = [
+        "demo",
         "country",
         "total cases",
         "new cases",
@@ -16,8 +17,17 @@ col_name = [
         "deaths/1M",
         "total tests",
         "test/1M population",
+        "population",
         "region"
     ]
+
+
+def is_number(str):
+    try:
+        int(str)
+        return True
+    except ValueError:
+        return False
 
 
 class WebScrap:
@@ -30,17 +40,22 @@ class WebScrap:
         tbody = table.tbody
         rows = tbody.find_all('tr')
 
-        corona_stat = {}
+        corona_stat = []
         for tr in rows:
             row_stat = {}
             row = tr.find_all('td')
             ind = 0
+
             for td in row:
-                row_stat[col_name[ind]] = td.text.strip()
+                text = td.text.strip()
+                text = text.replace(',', '')
+                if is_number(text):
+                    text = int(text)
+                row_stat[col_name[ind]] = text
                 ind = ind + 1
 
             country = row[0].text.strip().lower()
-            corona_stat[country] = row_stat
+            corona_stat.append(row_stat)
 
         return corona_stat
 

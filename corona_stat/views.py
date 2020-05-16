@@ -111,8 +111,9 @@ class CoronaStatOfDistrict(APIView):
     def get(self, request, format=None):
         print('request come')
         try:
-            pdf_url = "https://www.iedcr.gov.bd/website/images/files/nCoV/Case_dist_09_May_upload.pdf"
-            affected_number = pdf_read(pdf_url)
+            pdf_url = "https://www.iedcr.gov.bd/website/images/files/nCoV/Case_dist_10_May_upload.pdf"
+            affected_number = {}
+            pdf_read(pdf_url)
             return Response(affected_number, status=status.HTTP_200_OK)
         except:
             print("error")
