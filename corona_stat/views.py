@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from bs4 import BeautifulSoup
-from .web_scraping import WebScrap
+from .web_scraping import WebScrap, get_prothom_alo_live_news, get_full_stat
 from .pdf import pdf_read
 
 
@@ -95,16 +95,22 @@ def get_content(html):
 
 
 class CoronaStatList(APIView):
-    def get(self, request, format=None):
+    def get(self, request, day, format=None):
         url = 'https://www.worldometers.info/coronavirus/'
-        web_scrap = WebScrap(url)
-        res = web_scrap.simple_get()
+        res = None
+        try:
+            web_scrap = WebScrap(url)
+            res = web_scrap.simple_get()
+        except Exception as e:
+            print('exception is: ' + str(e))
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if res is None:
-            return Response('error', status=status.HTTP_400_BAD_REQUEST)
-
-        content = web_scrap.get_full_stat()
-        return Response(content, status=status.HTTP_200_OK)
+        try:
+            content = get_full_stat(res, day)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(content, status=status.HTTP_200_OK)
 
 
 class CoronaStatOfDistrict(APIView):
@@ -119,3 +125,15 @@ class CoronaStatOfDistrict(APIView):
             print("error")
             return Response('error', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class CoronaLive(APIView):
+    def get(self, request, format=None):
+        url = 'https://www.prothomalo.com/'
+        web_scrap = WebScrap(url)
+        res = web_scrap.simple_get()
+
+        if res is None:
+            return Response('error', status=status.HTTP_400_BAD_REQUEST)
+
+        content = get_prothom_alo_live_news(res)
+        return Response(content, status=status.HTTP_200_OK)

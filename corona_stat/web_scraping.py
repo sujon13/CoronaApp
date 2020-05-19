@@ -30,13 +30,26 @@ def is_number(str):
         return False
 
 
-class WebScrap:
-    def __init__(self, url):
-        self.url = url
-        self.html = None
+def get_prothom_alo_live_news(content):
+    html = BeautifulSoup(content, 'html.parser')
+    local_root = html.find_all('div', class_='score-content')
+    unicoded_local_root = []
+    for content in local_root:
+        unicoded_local_root.append(content.encode('utf-8'))
 
-    def get_full_stat(self):
-        table = self.html.find(id='main_table_countries_today')
+    return unicoded_local_root
+
+
+def get_full_stat(html, day):
+    try:
+        html = BeautifulSoup(html, 'html.parser')
+    except Exception as e:
+        print('error in parsing the html')
+        print(e)
+        raise
+
+    try:
+        table = html.find(id='main_table_countries_{0}'.format(day))
         tbody = table.tbody
         rows = tbody.find_all('tr')
 
@@ -54,10 +67,19 @@ class WebScrap:
                 row_stat[col_name[ind]] = text
                 ind = ind + 1
 
-            country = row[0].text.strip().lower()
             corona_stat.append(row_stat)
 
+    except Exception as e:
+        print('html structure changed')
+        print(e)
+        raise
+    else:
         return corona_stat
+
+
+class WebScrap:
+    def __init__(self, url):
+        self.url = url
 
     def simple_get(self):
         """
@@ -68,14 +90,19 @@ class WebScrap:
         try:
             with closing(get(self.url, stream=True)) as resp:
                 if self.is_good_response(resp):
-                    self.html = BeautifulSoup(resp.content, 'html.parser')
                     return resp.content
                 else:
-                    return None
+                    exception = 'response is bad'
+                    print(exception)
+                    raise Exception(exception)
 
         except RequestException as e:
-            self.log_error('Error during requests to {0} : {1}'.format(url, str(e)))
-            return None
+            self.log_error('Error during requests to {0} : {1}'.format(self.url, str(e)))
+            raise
+            # return None
+        except Exception as e:
+            self.log_error('Error occurred: {0'.format(str(e)))
+            raise
 
     def is_good_response(self, resp):
         """
