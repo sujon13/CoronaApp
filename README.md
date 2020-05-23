@@ -6,7 +6,9 @@ Base url: https://covid-19-info-bd.herokuapp.com
 
 #### Endpoint ####
 ```GET https://covid-19-info-bd.herokuapp.com/api/v1/corona_stats/(day)/```
+
 Example: ```https://covid-19-info-bd.herokuapp.com/api/v1/corona_stats/today/``` 
+
 You can also use yesterday in place of day
 
 #### Response ####
