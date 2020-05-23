@@ -4,7 +4,7 @@ from contextlib import closing
 from bs4 import BeautifulSoup
 
 col_name = [
-        "demo",
+        "serial",
         "country",
         "total cases",
         "new cases",
