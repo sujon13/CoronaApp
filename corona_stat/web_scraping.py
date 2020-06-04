@@ -11,6 +11,7 @@ col_name = [
         "total deaths",
         "new deaths",
         "total recovered",
+        "new recovered",
         "active cases",
         "serious/ critical",
         "total cases/1M",
@@ -27,6 +28,8 @@ def is_number(str):
         int(str)
         return True
     except ValueError:
+        return False
+    except Exception:
         return False
 
 
@@ -64,6 +67,10 @@ def get_full_stat(html, day):
                 text = text.replace(',', '')
                 if is_number(text):
                     text = int(text)
+
+                if ind > 15:
+                    break
+
                 row_stat[col_name[ind]] = text
                 ind = ind + 1
 
