@@ -23,6 +23,7 @@ Response code [200 OK,...]
         "total deaths": 452,
         "new deaths": 20,
         "total recovered": 6486,
+        "new recovered: 900,
         "active cases": 25140,
         "serious/ critical": 1,
         "total cases/1M": 195,
